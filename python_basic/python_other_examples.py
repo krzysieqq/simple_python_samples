@@ -1,4 +1,6 @@
 import this
+import os
+
 """
 The Zen of Python, by Tim Peters
 
@@ -74,3 +76,46 @@ print(a ^ b)  # Output: 55 = 110111
 print(a << 2)  # Output: 232 = 11101000
 # Right Shift
 print(a >> 2)  # Output: 14 = 1110
+
+
+# Generators
+"""
+Każda funkcja, która przyjmuje inną funkcję jako jej jedyny argument i zwraca też funkcję lub inny obiekt wywoływalny
+może być użyta jako dekorator. Generatory (yield)
+"""
+
+
+def silnia(liczba):
+    sil = 1
+    for i in range(1, liczba+1):
+        sil *= i
+        yield sil
+
+
+for s in silnia(10):
+    print(s)
+
+
+# długości nazw wszystkich plików w danym katalogu
+def generuj_dlugosci(kolejne_nazwy):
+    for nazwa in kolejne_nazwy:
+        if not nazwa.startswith('.'):
+            yield len(nazwa)
+
+
+dlugosci = generuj_dlugosci(os.listdir('/home/zuo/moje_pliki/'))
+suma_dlugosci_nazw = sum(dlugosci)  # funkcja sum() dodaje do siebie wszystkie elementy
+# (argumentem jest jakikolwiek obiekt iterowalny, np. lista lub właśnie generator)
+suma_dlugosci_nazw = sum(len(nazwa) for nazwa in os.listdir('/home/zuo/moje_pliki/') if not nazwa.startswith('.'))
+
+# Warto zauważyć jeszcze jedną istotną praktyczną różnicę między listą a generatorem (czy innym iteratorem):
+lista = [x * 2 for x in [1, 3, 5, 7, 8, 6, 4, 2]]
+for i in lista: print(i)  # jest OK zarówno za pierwszym razem...
+# 2 6 10 14 16 12 8 4
+for i in lista: print(i)  # ...jak i za każdym następnym:
+# 2 6 10 14 16 12 8 4
+
+generator = (x * 2 for x in [1, 3, 5, 7, 8, 6, 4, 2])
+for i in generator: print(i)  # za pierwszym razem jest OK...
+# 2 6 10 14 16 12 8 4
+for i in generator: print(i)  # ...ale za każdym następnym będzie tak, jakbyśmy próbowali iterować po pustej liście:
